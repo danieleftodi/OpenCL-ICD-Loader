@@ -17,7 +17,6 @@
 
 #include "CL/cl.h"
 #include "CL/cl_gl.h"
-#include "CL/cl_gl_ext.h"
 
 /*
  * Prototypes for deprecated functions no longer present in cl.h
@@ -30,7 +29,7 @@ clSetCommandQueueProperty(cl_command_queue              /* command_queue */,
 
 #define ICD_DISPATCH_TABLE_ENTRY(fn) \
     assert(dispatchTable->entryCount < 256); \
-    dispatchTable->entries[dispatchTable->entryCount++] = (void*)(fn)
+    dispatchTable->entries[dispatchTable->entryCount++] = (void*)(intptr_t)(fn)
 
 cl_int cliIcdDispatchTableCreate(CLIicdDispatchTable **outDispatchTable)
 {

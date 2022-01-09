@@ -20,7 +20,7 @@
 #include "icd_dispatch.h"
 #include "icd_envvars.h"
 #if defined(CL_ENABLE_LAYERS)
-#include "cl_icd_layer.h"
+#include <CL/cl_layer.h>
 #endif // defined(CL_ENABLE_LAYERS)
 #include <stdlib.h>
 #include <string.h>
@@ -361,12 +361,12 @@ void khrIcdVendorsEnumerateEnv(void)
 #if defined(CL_ENABLE_LAYERS)
 void khrIcdLayersEnumerateEnv(void)
 {
-    char* layerFilenames = khrIcd_secure_getenv("OCL_ICD_LAYERS");
+    char* layerFilenames = khrIcd_secure_getenv("OPENCL_LAYERS");
     char* cur_file = NULL;
     char* next_file = NULL;
     if (layerFilenames)
     {
-        KHR_ICD_TRACE("Found OCL_ICD_LAYERS environment variable.\n");
+        KHR_ICD_TRACE("Found OPENCL_LAYERS environment variable.\n");
 
         next_file = layerFilenames;
         while (NULL != next_file && *next_file != '\0') {

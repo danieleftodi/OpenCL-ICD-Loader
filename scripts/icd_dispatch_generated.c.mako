@@ -68,7 +68,7 @@ ${("", "static ")[disp]}CL_API_ENTRY ${api.RetType} CL_API_CALL ${api.Name + (""
 %  if i < len(api.Params)-1:
     ${param.Type} ${param.Name}${param.TypeEnd},
 %  else:
-    ${param.Type} ${param.Name}${param.TypeEnd}) ${api.Suffix}
+    ${param.Type} ${param.Name}${param.TypeEnd})
 %  endif
 %endfor
 {
@@ -78,7 +78,12 @@ ${("", "static ")[disp]}CL_API_ENTRY ${api.RetType} CL_API_CALL ${api.Name + (""
 %if disp == 0:
 #if defined(CL_ENABLE_LAYERS)
     if (khrFirstLayer)
+%  if api.Name == "clSVMFree":
+    {
+        khrFirstLayer->dispatch.${api.Name}(
+%  else:
         return khrFirstLayer->dispatch.${api.Name}(
+%  endif
 %for i, param in enumerate(api.Params):
 %  if i < len(api.Params)-1:
             ${param.Name},
@@ -86,6 +91,10 @@ ${("", "static ")[disp]}CL_API_ENTRY ${api.RetType} CL_API_CALL ${api.Name + (""
             ${param.Name});
 %  endif
 %endfor
+%  if api.Name == "clSVMFree":
+        return;
+    }
+%  endif
 #endif // defined(CL_ENABLE_LAYERS)
 %endif
 %if api.RetType in apihandles or api.RetType == "void*":
@@ -209,7 +218,7 @@ ${("", "static ")[disp]}CL_API_ENTRY ${api.RetType} CL_API_CALL ${api.Name + (""
 %  if i < len(api.Params)-1:
     ${param.Type} ${param.Name}${param.TypeEnd},
 %  else:
-    ${param.Type} ${param.Name}${param.TypeEnd}) ${api.Suffix}
+    ${param.Type} ${param.Name}${param.TypeEnd})
 %  endif
 %endfor
 {
