@@ -5,11 +5,6 @@
 #include<CL/cl_gl.h>
 #include<CL/cl_gl_ext.h>
 
-#ifdef _WIN32
-#include <windows.h> /* Needed for gl.h */
-#endif
-#include<GL/gl.h>
-
 struct clCreateCommandQueue_st
 {
     cl_context context;
@@ -73,6 +68,13 @@ struct clGetContextInfo_st
     size_t *param_value_size_ret;
 };
 
+struct clSetContextDestructorCallback_st
+{
+    cl_context context;
+    void (CL_CALLBACK *pfn_notify)(cl_context context, void *user_data);
+    void *user_data;
+};
+
 struct clGetPlatformIDs_st 
 {
     cl_uint num_entries;
@@ -118,6 +120,7 @@ struct clReleaseCommandQueue_st
 #define NUM_ITEMS_clRetainContext 1
 #define NUM_ITEMS_clReleaseContext 1
 #define NUM_ITEMS_clGetContextInfo 1
+#define NUM_ITEMS_clSetContextDestructorCallback 1
 #define NUM_ITEMS_clGetPlatformIDs 1
 #define NUM_ITEMS_clGetPlatformInfo 1
 #define NUM_ITEMS_clGetDeviceIDs 1
@@ -156,6 +159,7 @@ struct clReleaseDevice_st
 
 
 #define NUM_ITEMS_clCreateBuffer 1
+#define NUM_ITEMS_clCreateBufferWithProperties 1
 #define NUM_ITEMS_clCreateSubBuffer 1
 #define NUM_ITEMS_clEnqueueReadBuffer 1
 #define NUM_ITEMS_clEnqueueWriteBuffer 1
@@ -179,6 +183,17 @@ struct clCreateBuffer_st
     void *host_ptr;
     cl_int *errcode_ret;
 };
+
+struct clCreateBufferWithProperties_st
+{
+    cl_context context;
+    const cl_mem_properties * properties;
+    cl_mem_flags flags;
+    size_t size;
+    void *host_ptr;
+    cl_int *errcode_ret;
+};
+
 struct clCreateSubBuffer_st 
 {
     cl_mem buffer;
@@ -478,6 +493,7 @@ struct clGetProgramBuildInfo_st
 #define NUM_ITEMS_clCreateImage2D 1
 #define NUM_ITEMS_clCreateImage3D 1
 #define NUM_ITEMS_clCreateImage 1
+#define NUM_ITEMS_clCreateImageWithProperties 1
 #define NUM_ITEMS_clGetSupportedImageFormats 1
 #define NUM_ITEMS_clEnqueueCopyImageToBuffer 1
 #define NUM_ITEMS_clEnqueueCopyBufferToImage 1
@@ -495,6 +511,17 @@ struct clCreateImage_st
     cl_mem_flags flags;
     const cl_image_format *image_format;
     const cl_image_desc *image_desc; 
+    void *host_ptr;
+    cl_int *errcode_ret;
+};
+
+struct clCreateImageWithProperties_st
+{
+    cl_context context;
+    const cl_mem_properties * properties;
+    cl_mem_flags flags;
+    const cl_image_format *image_format;
+    const cl_image_desc *image_desc;
     void *host_ptr;
     cl_int *errcode_ret;
 };
@@ -765,7 +792,7 @@ struct clGetKernelWorkGroupInfo_st
 struct clEnqueueMigrateMemObjects_st 
 {
     cl_command_queue command_queue;
-    size_t num_mem_objects;
+    cl_uint num_mem_objects;
     const cl_mem *mem_objects;
     cl_mem_migration_flags flags;
     cl_uint num_events_in_wait_list;
@@ -930,7 +957,7 @@ struct clCreateFromGLBuffer_st
 {
     cl_context context;
     cl_mem_flags flags; 
-    GLuint bufobj; 
+    cl_GLuint bufobj; 
     int *errcode_ret;
 };
 
@@ -942,9 +969,9 @@ struct clCreateFromGLTexture_st
 {
     cl_context context;
     cl_mem_flags flags; 
-    GLenum texture_target;
-    GLint miplevel; 
-    GLuint texture; 
+    cl_GLenum texture_target;
+    cl_GLint miplevel; 
+    cl_GLuint texture; 
     cl_int *errcode_ret;
 };
 
@@ -952,9 +979,9 @@ struct clCreateFromGLTexture2D_st
 {
     cl_context context;
     cl_mem_flags flags; 
-    GLenum texture_target;
-    GLint miplevel; 
-    GLuint texture; 
+    cl_GLenum texture_target;
+    cl_GLint miplevel; 
+    cl_GLuint texture; 
     cl_int *errcode_ret;
 };
 
@@ -962,9 +989,9 @@ struct clCreateFromGLTexture3D_st
 {
     cl_context context;
     cl_mem_flags flags; 
-    GLenum texture_target;
-    GLint miplevel; 
-    GLuint texture; 
+    cl_GLenum texture_target;
+    cl_GLint miplevel; 
+    cl_GLuint texture; 
     cl_int *errcode_ret;
 };
 
@@ -974,7 +1001,7 @@ struct clCreateFromGLRenderbuffer_st
 {
     cl_context context; 
     cl_mem_flags flags;
-    GLuint renderbuffer; 
+    cl_GLuint renderbuffer; 
     cl_int *errcode_ret;
 };
   
@@ -987,7 +1014,7 @@ struct clGetGLObjectInfo_st
 {
     cl_mem memobj;
     cl_gl_object_type *gl_object_type; 
-    GLuint *gl_object_name;
+    cl_GLuint *gl_object_name;
 };
 
 struct clGetGLTextureInfo_st 

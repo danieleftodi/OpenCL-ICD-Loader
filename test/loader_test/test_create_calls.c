@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdlib.h>
 
 #define CL_USE_DEPRECATED_OPENCL_1_0_APIS
 #define CL_USE_DEPRECATED_OPENCL_1_1_APIS
@@ -59,6 +60,11 @@ const struct clCreateBuffer_st clCreateBufferData[NUM_ITEMS_clCreateBuffer] =
     {NULL, 0, 0, NULL, NULL}
 };
 
+const struct clCreateBufferWithProperties_st clCreateBufferWithPropertiesData[NUM_ITEMS_clCreateBufferWithProperties] =
+{
+    {NULL, NULL, 0, 0, NULL, NULL}
+};
+
 const struct clCreateSubBuffer_st clCreateSubBufferData[NUM_ITEMS_clCreateSubBuffer] =
 {
     {NULL, 0, 0, NULL, NULL}
@@ -67,6 +73,11 @@ const struct clCreateSubBuffer_st clCreateSubBufferData[NUM_ITEMS_clCreateSubBuf
 const struct clCreateImage_st clCreateImageData[NUM_ITEMS_clCreateImage] =
 {
     { NULL, 0x0, NULL, NULL, NULL, NULL}
+};
+
+const struct clCreateImageWithProperties_st clCreateImageWithPropertiesData[NUM_ITEMS_clCreateImageWithProperties] =
+{
+    { NULL, NULL, 0x0, NULL, NULL, NULL, NULL}
 };
 
 const struct clCreateImage2D_st clCreateImage2DData[NUM_ITEMS_clCreateImage2D] =
@@ -298,6 +309,31 @@ int test_clCreateBuffer(const struct clCreateBuffer_st *data)
 
 }
 
+int test_clCreateBufferWithProperties(const struct clCreateBufferWithProperties_st *data)
+{
+    test_icd_app_log("clCreateBufferWithProperties(%p, %p, %x, %u, %p, %p)\n",
+                     context,
+                     data->properties,
+                     data->flags,
+                     data->size,
+                     data->host_ptr,
+                     data->errcode_ret);
+
+    buffer = clCreateBufferWithProperties(context,
+                       data->properties,
+                       data->flags,
+                       data->size,
+                       data->host_ptr,
+                       data->errcode_ret);
+
+    clReleaseMemObjectData->memobj = buffer;
+
+    test_icd_app_log("Value returned: %p\n", buffer);
+
+    return 0;
+
+}
+
 int test_clCreateSubBuffer(const struct clCreateSubBuffer_st *data)
 {
     test_icd_app_log("clCreateSubBuffer(%p, %x, %u, %p, %p)\n",
@@ -338,6 +374,32 @@ int test_clCreateImage(const struct clCreateImage_st *data)
                         data->host_ptr,
                         data->errcode_ret);
     
+    clReleaseMemObjectDataImage[0].memobj = image;
+    test_icd_app_log("Value returned: %p\n", image);
+
+    return 0;
+
+}
+
+int test_clCreateImageWithProperties(const struct clCreateImageWithProperties_st *data)
+{
+    test_icd_app_log("clCreateImageWithProperties(%p, %p, %x, %p, %p, %p, %p)\n",
+                     context,
+                     data->properties,
+                     data->flags,
+                     data->image_format,
+                     data->image_desc,
+                     data->host_ptr,
+                     data->errcode_ret);
+
+    image = clCreateImageWithProperties(context,
+                        data->properties,
+                        data->flags,
+                        data->image_format,
+                        data->image_desc,
+                        data->host_ptr,
+                        data->errcode_ret);
+
     clReleaseMemObjectDataImage[0].memobj = image;
     test_icd_app_log("Value returned: %p\n", image);
 
@@ -709,9 +771,13 @@ int test_create_calls()
 
     test_clCreateBuffer(clCreateBufferData);
 
+    test_clCreateBufferWithProperties(clCreateBufferWithPropertiesData);
+
     test_clCreateSubBuffer(clCreateSubBufferData);
 
     test_clCreateImage(clCreateImageData);
+
+    test_clCreateImageWithProperties(clCreateImageWithPropertiesData);
 
     test_clReleaseMemObject(clReleaseMemObjectDataImage);
 
